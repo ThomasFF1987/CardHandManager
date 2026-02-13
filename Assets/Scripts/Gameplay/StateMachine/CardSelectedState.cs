@@ -22,12 +22,7 @@ public class CardSelectedState : ICardState
             stateMachine.CardAnimator.AnimateSelected();
         }
         
-        // Augmenter le sorting order pour être au-dessus
-        if (stateMachine.CardData != null)
-        {
-            stateMachine.CardData.frontSpriteRenderer.sortingOrder = 100;
-            stateMachine.CardData.backSpriteRenderer.sortingOrder = 100;
-        }
+        // Ne plus modifier le sorting order pour garder l'ordre des cartes
     }
 
     public void OnUpdate()

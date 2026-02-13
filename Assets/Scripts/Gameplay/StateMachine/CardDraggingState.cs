@@ -8,6 +8,7 @@ public class CardDraggingState : ICardState
 {
     private readonly CardStateMachine stateMachine;
     private Camera mainCamera;
+    private Vector3 dragOffset;
     
     public string StateName => "Dragging";
 
@@ -19,6 +20,20 @@ public class CardDraggingState : ICardState
     public void OnEnter()
     {
         mainCamera = Camera.main;
+        
+        // Calculer l'offset initial entre la carte et la souris
+        if (mainCamera != null && Mouse.current != null)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            
+            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                mousePosition.x,
+                mousePosition.y,
+                Mathf.Abs(mainCamera.transform.position.z)
+            ));
+            
+            dragOffset = stateMachine.Transform.position - worldPosition;
+        }
         
         // Arrêter toute animation en cours
         if (stateMachine.CardAnimator != null)
@@ -40,23 +55,18 @@ public class CardDraggingState : ICardState
                 Mathf.Abs(mainCamera.transform.position.z)
             ));
             
-            stateMachine.Transform.position = worldPosition;
+            stateMachine.Transform.position = worldPosition + dragOffset;
 
             // Notifier le changement de position pour réorganiser la main
             if (CardEventBus.Instance != null)
             {
-                CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, worldPosition);
+                CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, worldPosition + dragOffset);
             }
         }
     }
 
     public void OnExit()
     {
-        // Restaurer le sorting order
-        if (stateMachine.CardData != null)
-        {
-            stateMachine.CardData.frontSpriteRenderer.sortingOrder = stateMachine.CardData.sortingOrderInitiale;
-            stateMachine.CardData.backSpriteRenderer.sortingOrder = stateMachine.CardData.sortingOrderInitiale;
-        }
+        // Le sorting order n'est plus modifié, donc pas besoin de le restaurer
     }
 }
