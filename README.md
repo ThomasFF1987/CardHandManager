@@ -1,4 +1,5 @@
 [CARDHANDMANAGER]
+
 Developed by Thomas Baggi-Sani, in Unity C#.
 
 This project is based on the desire to reproduce trading card game features like here, having a hand of cards to play in your game.
@@ -10,4 +11,5 @@ I hope, you will enjoyed it and feel free to ask for features or modifications.
 It's currently a WIP project.
 
 CardHandManager demo :
+
 ![](https://github.com/ThomasFF1987/CardHandManager/blob/main/CardHandManagerDemo.gif)
