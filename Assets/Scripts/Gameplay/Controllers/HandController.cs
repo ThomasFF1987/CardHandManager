@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class HandController : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class HandController : MonoBehaviour
     [Header("Starting Hand")]
     [SerializeField] private int startingHandSize = 5;
     [SerializeField] private CardConfiguration defaultCardConfig;
+    [SerializeField] private List<CardConfiguration> decks;
 
     private Hand hand = new Hand();
     private bool isSubscribed = false;
@@ -17,10 +19,9 @@ public class HandController : MonoBehaviour
         // Tirer les cartes de départ
         if (startingHandSize > 0)
         {
-            for (int i = 0; i < startingHandSize; i++)
-            {
-                Card tempCard = CreateCardFromConfiguration(defaultCardConfig);
-                AddCard(tempCard);
+            List<Card> tempCards = CreateCardFromDeck(decks, startingHandSize);
+            foreach (Card card in tempCards){
+                AddCard(card);
             }
         }
 
@@ -97,6 +98,27 @@ public class HandController : MonoBehaviour
             Name = config.cardName,
             CardImage = config.frontSprite
         };
+    }
+
+    private List<Card> CreateCardFromDeck(List<CardConfiguration> deck, int handSize)
+    {
+        if (deck == null || deck.Count == 0) return null;
+
+        List<Card> cards = new List<Card>();
+
+        for(int i = 0; i < handSize; i++)
+        {
+            cards.Add(
+                new Card
+                {
+                    Id = System.Guid.NewGuid().ToString(),
+                    Name = deck[i].cardName,
+                    CardImage = deck[i].frontSprite
+                }
+            );
+        }
+
+        return cards;
     }
 
     [ContextMenu("Add Test Card")]

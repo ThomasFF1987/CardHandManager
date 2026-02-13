@@ -167,7 +167,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandView
   spacing: 5
   angleMax: 45
-  lerpSpeed: 25.2
   cardPrefab: {fileID: 2818897213258379560, guid: 99ee095194da6ee4ebbde558c10618e4, type: 3}
   handTransform: {fileID: 2030229475}
 --- !u!114 &46629467
@@ -185,6 +184,17 @@ MonoBehaviour:
   view: {fileID: 46629466}
   startingHandSize: 7
   defaultCardConfig: {fileID: 11400000, guid: d33acc265ab79864b8c50da8fe706c31, type: 2}
+  decks:
+  - {fileID: 11400000, guid: 0d2e315e87525d54787119af3cbb4f5e, type: 2}
+  - {fileID: 11400000, guid: 5575e50f5ffa49146b668aa27a85625e, type: 2}
+  - {fileID: 11400000, guid: 67421d7455228b1469d95529d0caeaab, type: 2}
+  - {fileID: 11400000, guid: 4105fcc3ad5e36c48affd1449500b658, type: 2}
+  - {fileID: 11400000, guid: 9e7a8b3ec30cd1a40b6d1663522adb45, type: 2}
+  - {fileID: 11400000, guid: 0d2e315e87525d54787119af3cbb4f5e, type: 2}
+  - {fileID: 11400000, guid: 5575e50f5ffa49146b668aa27a85625e, type: 2}
+  - {fileID: 11400000, guid: 67421d7455228b1469d95529d0caeaab, type: 2}
+  - {fileID: 11400000, guid: 4105fcc3ad5e36c48affd1449500b658, type: 2}
+  - {fileID: 11400000, guid: 9e7a8b3ec30cd1a40b6d1663522adb45, type: 2}
 --- !u!1 &181594343
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
+  m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
@@ -377,7 +387,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -474,7 +484,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079307644}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 

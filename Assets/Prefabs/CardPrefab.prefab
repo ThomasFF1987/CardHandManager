@@ -81,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8cb5ede81b8c19b498da7ed3b020c0c1, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -89,7 +89,7 @@ SpriteRenderer:
   m_Size: {x: 2.65, y: 3.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2818897213258379560
 GameObject:
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 1777974712149186557}
   - component: {fileID: -3960221625189436946}
   m_Layer: 3
-  m_Name: CardPrefab_v2
+  m_Name: CardPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,6 +190,8 @@ MonoBehaviour:
   frontSpriteRenderer: {fileID: 1449805876589091805}
   backSpriteRenderer: {fileID: 6189065595693813379}
   boxCollider2D: {fileID: 270592473864220202}
+  cardWidth: 2.5
+  cardHeight: 3.5
   positionInitiale: {x: 0, y: 0, z: 0}
   rotationInitiale: {x: 0, y: 0, z: 0, w: 0}
   sortingOrderInitiale: 0
@@ -315,7 +317,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8addd4940b10efd4d853569dd6ad9b1b, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -323,5 +325,5 @@ SpriteRenderer:
   m_Size: {x: 6.3, y: 8.8}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
