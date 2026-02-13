@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,12 +30,63 @@ public class HandView : MonoBehaviour
     
     private Dictionary<Card, CardComponents> cardComponents = new Dictionary<Card, CardComponents>();
     private HashSet<Card> currentCardsSet = new HashSet<Card>();
-    
+    private IReadOnlyList<Card> cachedCards;
+
+    // Events pour détecter les changements de layout
+    public event Action OnSpacingChanged;
+    public event Action OnAngleMaxChanged;
+
+    /// <summary>
+    /// Propriété pour modifier le spacing en runtime avec notification de changement
+    /// </summary>
+    public float Spacing
+    {
+        get => spacing;
+        set
+        {
+            if (!Mathf.Approximately(spacing, value))
+            {
+                spacing = Mathf.Clamp(value, 1f, 50f);
+                OnSpacingChanged?.Invoke();
+                RefreshLayout();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Propriété pour modifier l'angle max en runtime avec notification de changement
+    /// </summary>
+    public float AngleMax
+    {
+        get => angleMax;
+        set
+        {
+            if (!Mathf.Approximately(angleMax, value))
+            {
+                angleMax = Mathf.Clamp(value, 0f, 100f);
+                OnAngleMaxChanged?.Invoke();
+                RefreshLayout();
+            }
+        }
+    }
+
     public void UpdateDisplay(IReadOnlyList<Card> cards)
     {
+        cachedCards = cards;
         RemoveObsoleteCards(cards);
         AddNewCards(cards);
         UpdateLayout(cards);
+    }
+
+    /// <summary>
+    /// Rafraîchit le layout avec les cartes actuelles (utilisé quand spacing ou angleMax change)
+    /// </summary>
+    private void RefreshLayout()
+    {
+        if (cachedCards != null && cachedCards.Count > 0)
+        {
+            UpdateLayout(cachedCards);
+        }
     }
     
     /// <summary>
@@ -89,7 +141,7 @@ public class HandView : MonoBehaviour
                     components.Data.CardInfo = card;
                     if (card.CardImage != null)
                     {
-                        components.Data.frontSpriteRenderer.sprite = card.CardImage;
+                        components.Data.SetFrontSprite(card.CardImage);
                     }
                     components.Data.ShowFront();
                 }
@@ -183,4 +235,17 @@ public class HandView : MonoBehaviour
             components.Animator.SetTargetTransform(targetPosition, targetRotation);
         }
     }
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Permet de modifier spacing et angleMax en temps réel dans l'Inspector en mode Play
+    /// </summary>
+    private void OnValidate()
+    {
+        if (Application.isPlaying)
+        {
+            RefreshLayout();
+        }
+    }
+#endif
 }
