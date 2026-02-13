@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// État lorsque la carte est en train d'être déplacée
@@ -28,21 +29,23 @@ public class CardDraggingState : ICardState
 
     public void OnUpdate()
     {
-        // Suivre la position de la souris
-        if (mainCamera != null)
+        // Suivre la position de la souris avec le nouveau Input System
+        if (mainCamera != null && Mouse.current != null)
         {
-            Vector3 mousePosition = mainCamera.ScreenToWorldPoint(new Vector3(
-                Input.mousePosition.x,
-                Input.mousePosition.y,
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            
+            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                mousePosition.x,
+                mousePosition.y,
                 Mathf.Abs(mainCamera.transform.position.z)
             ));
             
-            stateMachine.Transform.position = mousePosition;
+            stateMachine.Transform.position = worldPosition;
 
             // Notifier le changement de position pour réorganiser la main
             if (CardEventBus.Instance != null)
             {
-                CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, mousePosition);
+                CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, worldPosition);
             }
         }
     }
