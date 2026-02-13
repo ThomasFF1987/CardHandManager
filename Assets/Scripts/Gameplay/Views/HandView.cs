@@ -139,11 +139,12 @@ public class HandView : MonoBehaviour
                 if (components.Data != null)
                 {
                     components.Data.CardInfo = card;
-                    if (card.CardImage != null)
+                    if (card.CardFrontImage != null && card.CardBackImage != null)
                     {
-                        components.Data.SetFrontSprite(card.CardImage);
+                        components.Data.SetFrontSprite(card.CardFrontImage);
+                        components.Data.SetBackSprite(card.CardBackImage);
                     }
-                    components.Data.ShowFront();
+                    //components.Data.ShowFront();
                 }
             }
         }
@@ -234,6 +235,18 @@ public class HandView : MonoBehaviour
             // Juste mettre à jour la cible pour quand elle sera relâchée
             components.Animator.SetTargetTransform(targetPosition, targetRotation);
         }
+    }
+
+    /// <summary>
+    /// Récupère le GameObject associé à une carte
+    /// </summary>
+    public GameObject GetCardGameObject(Card card)
+    {
+        if (cardGameObjects.TryGetValue(card, out GameObject cardGO))
+        {
+            return cardGO;
+        }
+        return null;
     }
 
 #if UNITY_EDITOR

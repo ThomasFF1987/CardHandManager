@@ -39,7 +39,8 @@ public class DeckController : MonoBehaviour
             {
                 Id = System.Guid.NewGuid().ToString(),
                 Name = cardConfig.cardName,
-                CardImage = cardConfig.frontSprite
+                CardFrontImage = cardConfig.frontSprite,
+                CardBackImage = cardConfig.backSprite
             };
             deck.AddCard(card);
         }

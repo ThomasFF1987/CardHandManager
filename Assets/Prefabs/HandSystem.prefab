@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5230512231621004226
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3463246541307210985}
+  - component: {fileID: 2613252226740545884}
+  - component: {fileID: 3818488103149931744}
+  m_Layer: 0
+  m_Name: HandSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3463246541307210985
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230512231621004226}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 96962928855666178}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2613252226740545884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230512231621004226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e84c130279a94147a76479cf8ea7c30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandController
+  view: {fileID: 3818488103149931744}
+  startingHandSize: 7
+  defaultCardConfig: {fileID: 11400000, guid: d33acc265ab79864b8c50da8fe706c31, type: 2}
+  deck:
+  - {fileID: 11400000, guid: 0d2e315e87525d54787119af3cbb4f5e, type: 2}
+  - {fileID: 11400000, guid: 5575e50f5ffa49146b668aa27a85625e, type: 2}
+  - {fileID: 11400000, guid: 67421d7455228b1469d95529d0caeaab, type: 2}
+  - {fileID: 11400000, guid: 4105fcc3ad5e36c48affd1449500b658, type: 2}
+  - {fileID: 11400000, guid: 9e7a8b3ec30cd1a40b6d1663522adb45, type: 2}
+  - {fileID: 11400000, guid: 0d2e315e87525d54787119af3cbb4f5e, type: 2}
+  - {fileID: 11400000, guid: 5575e50f5ffa49146b668aa27a85625e, type: 2}
+  - {fileID: 11400000, guid: 67421d7455228b1469d95529d0caeaab, type: 2}
+  - {fileID: 11400000, guid: 4105fcc3ad5e36c48affd1449500b658, type: 2}
+  - {fileID: 11400000, guid: 9e7a8b3ec30cd1a40b6d1663522adb45, type: 2}
+--- !u!114 &3818488103149931744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5230512231621004226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e27831895e07b74b8a5fec45b4e418b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandView
+  spacing: 5
+  angleMax: 45
+  cardPrefab: {fileID: 2818897213258379560, guid: 99ee095194da6ee4ebbde558c10618e4, type: 3}
+  handTransform: {fileID: 96962928855666178}
+--- !u!1 &5951367610414864072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 96962928855666178}
+  m_Layer: 0
+  m_Name: HandTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &96962928855666178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5951367610414864072}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3463246541307210985}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

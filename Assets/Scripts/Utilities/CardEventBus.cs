@@ -119,8 +119,9 @@ public class CardEventBus : Singleton<CardEventBus>
         ClearAllSubscriptions();
     }
 
-    private void OnApplicationQuit()
+    protected override void OnApplicationQuit()
     {
+        base.OnApplicationQuit();
         isQuitting = true;
         ClearAllSubscriptions();
     }

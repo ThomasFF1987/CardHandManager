@@ -9,7 +9,10 @@ public class HandController : MonoBehaviour
     [Header("Starting Hand")]
     [SerializeField] private int startingHandSize = 5;
     [SerializeField] private CardConfiguration defaultCardConfig;
-    [SerializeField] private List<CardConfiguration> decks;
+    [SerializeField] private List<CardConfiguration> deck;
+
+    [Header("Reorder Settings")]
+    [SerializeField] private float maxHeightOffset = 3.5f; // Hauteur d'une carte
 
     private Hand hand = new Hand();
     private bool isSubscribed = false;
@@ -19,7 +22,7 @@ public class HandController : MonoBehaviour
         // Tirer les cartes de départ
         if (startingHandSize > 0)
         {
-            List<Card> tempCards = CreateCardFromDeck(decks, startingHandSize);
+            List<Card> tempCards = CreateCardFromDeck(deck, startingHandSize);
             foreach (Card card in tempCards){
                 AddCard(card);
             }
@@ -41,6 +44,7 @@ public class HandController : MonoBehaviour
         {
             CardEventBus.Instance.RemoveCard += OnRemoveCardRequested;
             CardEventBus.Instance.HandLayoutToUpdate += OnLayoutUpdateRequested;
+            CardEventBus.Instance.UpdateCardIndex += OnUpdateCardIndexRequested;
             isSubscribed = true;
         }
     }
@@ -52,6 +56,7 @@ public class HandController : MonoBehaviour
         {
             CardEventBus.Instance.RemoveCard -= OnRemoveCardRequested;
             CardEventBus.Instance.HandLayoutToUpdate -= OnLayoutUpdateRequested;
+            CardEventBus.Instance.UpdateCardIndex -= OnUpdateCardIndexRequested;
             isSubscribed = false;
         }
     }
@@ -82,6 +87,69 @@ public class HandController : MonoBehaviour
         view.UpdateDisplay(hand.Cards);
     }
 
+    /// <summary>
+    /// Réorganise les cartes en fonction de la position de drag
+    /// </summary>
+    private void OnUpdateCardIndexRequested(GameObject cardGO, Vector3 worldPosition)
+    {
+        CardData cardData = cardGO.GetComponent<CardData>();
+        if (cardData == null || cardData.CardInfo == null) return;
+
+        // Vérifier si la carte est trop haute par rapport à sa position initiale
+        float heightDifference = worldPosition.y - cardData.positionInitiale.y;
+        
+        // Si la carte est trop haute (au-delà de la hauteur d'une carte), on ne réorganise pas
+        if (heightDifference > maxHeightOffset)
+        {
+            return;
+        }
+
+        // Calculer le nouvel index basé sur la position mondiale
+        int newIndex = CalculateCardIndexFromPosition(worldPosition);
+        
+        // Réorganiser la carte dans le modèle
+        hand.ReorderCard(cardData.CardInfo, newIndex);
+        
+        // Mettre à jour l'affichage
+        view.UpdateDisplay(hand.Cards);
+    }
+
+    /// <summary>
+    /// Calcule l'index de la carte en fonction de sa position X
+    /// </summary>
+    private int CalculateCardIndexFromPosition(Vector3 worldPosition)
+    {
+        // Si la main est vide, retourner 0
+        if (hand.Count == 0) return 0;
+
+        // Trouver l'index le plus proche basé sur la position X
+        float minDistance = float.MaxValue;
+        int closestIndex = 0;
+
+        for (int i = 0; i < hand.Count; i++)
+        {
+            Card card = hand.Cards[i];
+            GameObject cardGO = view.GetCardGameObject(card);
+            
+            if (cardGO != null)
+            {
+                CardData cardData = cardGO.GetComponent<CardData>();
+                if (cardData != null)
+                {
+                    float distance = Mathf.Abs(cardData.positionInitiale.x - worldPosition.x);
+                    
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestIndex = i;
+                    }
+                }
+            }
+        }
+
+        return closestIndex;
+    }
+
     public void RemoveAllCards()
     {
         hand.Clear();
@@ -96,7 +164,8 @@ public class HandController : MonoBehaviour
         {
             Id = System.Guid.NewGuid().ToString(),
             Name = config.cardName,
-            CardImage = config.frontSprite
+            CardFrontImage = config.frontSprite,
+            CardBackImage = config.backSprite
         };
     }
 
@@ -113,7 +182,8 @@ public class HandController : MonoBehaviour
                 {
                     Id = System.Guid.NewGuid().ToString(),
                     Name = deck[i].cardName,
-                    CardImage = deck[i].frontSprite
+                    CardFrontImage = deck[i].frontSprite,
+                    CardBackImage = deck[i].backSprite
                 }
             );
         }
