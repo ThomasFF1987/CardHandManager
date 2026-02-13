@@ -1,38 +1,45 @@
 using UnityEngine;
 
-/// <summary>
-/// Machine à états pour gérer les différents états d'une carte
-/// </summary>
 public class CardStateMachine : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField] private CardTiltSettings tiltSettings;
+    
+    // États
+    private CardIdleState idleState;
+    private CardHoverState hoverState;
+    private CardSelectedState selectedState;
+    private CardDraggingState draggingState;
+    
     private ICardState currentState;
     
-    // Références aux composants nécessaires
+    // Propriétés publiques pour accéder aux composants
+    public Transform Transform { get; private set; }
     public CardData CardData { get; private set; }
     public CardAnimator CardAnimator { get; private set; }
-    public Transform Transform { get; private set; }
+    public CardTiltSettings TiltSettings => tiltSettings;
     
-    // États disponibles
-    public CardIdleState IdleState { get; private set; }
-    public CardHoverState HoverState { get; private set; }
-    public CardSelectedState SelectedState { get; private set; }
-    public CardDraggingState DraggingState { get; private set; }
-    
+    // Propriétés pour accéder aux états
+    public CardIdleState IdleState => idleState;
+    public CardHoverState HoverState => hoverState;
+    public CardSelectedState SelectedState => selectedState;
+    public CardDraggingState DraggingState => draggingState;
+
     private void Awake()
     {
-        // Récupérer les références
+        Transform = transform;
         CardData = GetComponent<CardData>();
         CardAnimator = GetComponent<CardAnimator>();
-        Transform = transform;
         
         // Initialiser les états
-        IdleState = new CardIdleState(this);
-        HoverState = new CardHoverState(this);
-        SelectedState = new CardSelectedState(this);
-        DraggingState = new CardDraggingState(this);
+        idleState = new CardIdleState(this);
+        hoverState = new CardHoverState(this);
+        selectedState = new CardSelectedState(this);
+        draggingState = new CardDraggingState(this);
         
-        // ✅ CORRECTION : Commencer à l'état Idle dès Awake
-        ChangeState(IdleState);
+        // Démarrer à l'état Idle
+        currentState = idleState;
+        currentState.OnEnter();
     }
 
     private void Update()
@@ -40,9 +47,6 @@ public class CardStateMachine : MonoBehaviour
         currentState?.OnUpdate();
     }
 
-    /// <summary>
-    /// Change l'état actuel de la carte
-    /// </summary>
     public void ChangeState(ICardState newState)
     {
         if (currentState == newState) return;
@@ -50,20 +54,8 @@ public class CardStateMachine : MonoBehaviour
         currentState?.OnExit();
         currentState = newState;
         currentState?.OnEnter();
-        
-        #if UNITY_EDITOR
-        Debug.Log($"[{gameObject.name}] État changé vers : {currentState?.StateName}");
-        #endif
     }
 
-    /// <summary>
-    /// Obtient l'état actuel
-    /// </summary>
-    public ICardState GetCurrentState() => currentState;
-    
-    /// <summary>
-    /// Vérifie si on est dans un état donné
-    /// </summary>
     public bool IsInState<T>() where T : ICardState
     {
         return currentState is T;
