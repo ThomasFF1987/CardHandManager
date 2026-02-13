@@ -236,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddaf4a3e1e28ad546bd240081a446bd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardStateMachine
+  tiltSettings: {fileID: 11400000, guid: c342d53e1ca1f04479aaebaea420e448, type: 2}
 --- !u!1 &8023671607983303862
 GameObject:
   m_ObjectHideFlags: 0

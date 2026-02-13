@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41cd2c2c64cce9c4ebd3a4342dee8d60, type: 3}
+  m_Name: CardTiltSettings
+  m_EditorClassIdentifier: Assembly-CSharp::CardTiltSettings
+  tiltIntensityX: 30
+  tiltIntensityY: 30
+  tiltIntensityZ: 0
+  tiltSmoothSpeed: 15
+  maxTiltAngleXY: 50
+  maxTiltAngleZ: 10
