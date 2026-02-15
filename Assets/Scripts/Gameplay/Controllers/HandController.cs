@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class HandController : MonoBehaviour
 {
@@ -16,25 +17,44 @@ public class HandController : MonoBehaviour
 
     private Hand hand = new Hand();
     private bool isSubscribed = false;
+    private DrawHandCommand drawHandCommand;
 
     private void Start()
     {
-        // Tirer les cartes de départ
-        if (startingHandSize > 0)
-        {
-            List<Card> tempCards = CreateCardFromDeck(deck, startingHandSize);
-            foreach (Card card in tempCards){
-                AddCard(card);
-            }
-        }
-
         // S'abonner aux événements
         SubscribeToEvents();
+    }
+
+    private void Update()
+    {
+        // Écouter la touche G pour piocher/redessiner les cartes
+        if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            DrawInitialHand();
+        }
     }
 
     private void OnDestroy()
     {
         UnsubscribeFromEvents();
+    }
+
+    /// <summary>
+    /// Pioche/Repioche la main initiale en utilisant le pattern Command
+    /// </summary>
+    private void DrawInitialHand()
+    {
+        if (startingHandSize > 0)
+        {
+            // Vider la main existante
+            hand.Clear();
+            view.UpdateDisplay(hand.Cards);
+            
+            // Générer de nouvelles cartes
+            List<Card> tempCards = CreateCardFromDeck(deck, startingHandSize);
+            drawHandCommand = new DrawHandCommand(hand, view, tempCards);
+            drawHandCommand.Execute();
+        }
     }
 
     private void SubscribeToEvents()
@@ -150,60 +170,36 @@ public class HandController : MonoBehaviour
         return closestIndex;
     }
 
-    public void RemoveAllCards()
+    private List<Card> CreateCardFromDeck(List<CardConfiguration> cardDeck, int numberOfCard)
     {
-        hand.Clear();
-        view.UpdateDisplay(hand.Cards);
-    }
-
-    private Card CreateCardFromConfiguration(CardConfiguration config)
-    {
-        if (config == null) return null;
-
-        return new Card
+        List<Card> cardsGenerated = new List<Card>();
+        
+        for (int i = 0; i < numberOfCard; i++)
         {
-            Id = System.Guid.NewGuid().ToString(),
-            Name = config.cardName,
-            CardFrontImage = config.frontSprite,
-            CardBackImage = config.backSprite
-        };
-    }
-
-    private List<Card> CreateCardFromDeck(List<CardConfiguration> deck, int handSize)
-    {
-        if (deck == null || deck.Count == 0) return null;
-
-        List<Card> cards = new List<Card>();
-
-        for(int i = 0; i < handSize; i++)
-        {
-            cards.Add(
-                new Card
+            if (cardDeck != null && cardDeck.Count > 0)
+            {
+                int randomIndex = Random.Range(0, cardDeck.Count);
+                CardConfiguration config = cardDeck[randomIndex];
+                cardsGenerated.Add(new Card
                 {
                     Id = System.Guid.NewGuid().ToString(),
-                    Name = deck[i].cardName,
-                    CardFrontImage = deck[i].frontSprite,
-                    CardBackImage = deck[i].backSprite
-                }
-            );
+                    Name = config.cardName,
+                    CardFrontImage = config.frontSprite,
+                    CardBackImage = config.backSprite
+                });
+            }
+            else if (defaultCardConfig != null)
+            {
+                cardsGenerated.Add(new Card
+                {
+                    Id = System.Guid.NewGuid().ToString(),
+                    Name = defaultCardConfig.cardName,
+                    CardFrontImage = defaultCardConfig.frontSprite,
+                    CardBackImage = defaultCardConfig.backSprite
+                });
+            }
         }
-
-        return cards;
-    }
-
-    [ContextMenu("Add Test Card")]
-    private void AddTestCard()
-    {
-        Card testCard = CreateCardFromConfiguration(defaultCardConfig);
-        AddCard(testCard);
-    }
-
-    [ContextMenu("Remove Last Card")]
-    private void RemoveLastCard()
-    {
-        if (hand.Count > 0)
-        {
-            RemoveCard(hand.Cards[hand.Count - 1]);
-        }
+        
+        return cardsGenerated;
     }
 }

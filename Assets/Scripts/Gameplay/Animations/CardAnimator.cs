@@ -40,9 +40,10 @@ public class CardAnimator : MonoBehaviour
     {
         StopCurrentAnimation();
         
-        Vector3 hoverPosition = targetPosition + new Vector3(0, hoverHeight, 0);
+        // Utiliser l'axe Y local (transform.up) au lieu de l'axe Y global (Vector3.up)
+        Vector3 hoverPosition = targetPosition + (transform.up * hoverHeight);
         transform.localScale = initialScale * hoverScale;
-        currentAnimation = StartCoroutine(MoveToPosition(hoverPosition, Quaternion.identity));
+        currentAnimation = StartCoroutine(MoveToPosition(hoverPosition, targetRotation));
     }
 
     public void AnimateUnhover()

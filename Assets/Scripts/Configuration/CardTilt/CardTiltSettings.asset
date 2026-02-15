@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41cd2c2c64cce9c4ebd3a4342dee8d60, type: 3}
   m_Name: CardTiltSettings
   m_EditorClassIdentifier: Assembly-CSharp::CardTiltSettings
-  tiltIntensityX: 30
-  tiltIntensityY: 30
+  tiltIntensityX: 20
+  tiltIntensityY: 20
   tiltIntensityZ: 0
   tiltSmoothSpeed: 15
-  maxTiltAngleXY: 50
+  maxTiltAngleXY: 30
   maxTiltAngleZ: 10

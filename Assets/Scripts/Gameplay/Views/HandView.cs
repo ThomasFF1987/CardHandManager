@@ -242,11 +242,7 @@ public class HandView : MonoBehaviour
     /// </summary>
     public GameObject GetCardGameObject(Card card)
     {
-        if (cardGameObjects.TryGetValue(card, out GameObject cardGO))
-        {
-            return cardGO;
-        }
-        return null;
+        return cardGameObjects.TryGetValue(card, out GameObject cardGO) ? cardGO : null;
     }
 
 #if UNITY_EDITOR
