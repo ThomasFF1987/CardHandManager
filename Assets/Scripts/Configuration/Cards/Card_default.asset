@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Card_default
   m_EditorClassIdentifier: Assembly-CSharp::CardConfiguration
   cardName: "Ma Premi\xE8re Carte"
-  frontSprite: {fileID: 21300000, guid: 8addd4940b10efd4d853569dd6ad9b1b, type: 3}
+  frontSprite: {fileID: 21300000, guid: 0ca968154a0cff64b94586adaa71bda9, type: 3}
   backSprite: {fileID: 21300000, guid: 8cb5ede81b8c19b498da7ed3b020c0c1, type: 3}
   cost: 3
   description: Cette carte est un placeholder.

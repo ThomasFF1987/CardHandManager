@@ -1,9 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// État lorsque la carte est en train d'être déplacée
-/// </summary>
 public class CardDraggingState : ICardState
 {
     private readonly CardStateMachine stateMachine;
@@ -11,6 +8,10 @@ public class CardDraggingState : ICardState
     private Vector3 dragOffset;
     private Vector3 lastPosition;
     private Vector3 velocity;
+    
+    // Throttling pour les mises à jour de position
+    private float lastIndexUpdateTime;
+    private const float INDEX_UPDATE_INTERVAL = 0.05f; // 20 fois par seconde max
     
     public string StateName => "Dragging";
 
@@ -22,24 +23,37 @@ public class CardDraggingState : ICardState
     public void OnEnter()
     {
         mainCamera = Camera.main;
+        lastIndexUpdateTime = 0f;
         
-        // Calculer l'offset initial entre la carte et la souris
         if (mainCamera != null && Mouse.current != null)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             
-            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
-                mousePosition.x,
-                mousePosition.y,
-                Mathf.Abs(mainCamera.transform.position.z)
-            ));
+            Vector3 worldPosition;
+            if (mainCamera.orthographic)
+            {
+                worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                    mousePosition.x,
+                    mousePosition.y,
+                    Mathf.Abs(mainCamera.transform.position.z)
+                ));
+            }
+            else
+            {
+                // En Perspective : utiliser la distance jusqu'à la carte
+                float distanceToCard = mainCamera.transform.position.z - stateMachine.Transform.position.z;
+                worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                    mousePosition.x,
+                    mousePosition.y,
+                    Mathf.Abs(distanceToCard)
+                ));
+            }
             
             dragOffset = stateMachine.Transform.position - worldPosition;
             lastPosition = worldPosition + dragOffset;
             velocity = Vector3.zero;
         }
         
-        // Arrêter toute animation en cours
         if (stateMachine.CardAnimator != null)
         {
             stateMachine.CardAnimator.StopAllAnimations();
@@ -48,43 +62,61 @@ public class CardDraggingState : ICardState
 
     public void OnUpdate()
     {
-        // Suivre la position de la souris avec le nouveau Input System
         if (mainCamera != null && Mouse.current != null)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             
-            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
-                mousePosition.x,
-                mousePosition.y,
-                Mathf.Abs(mainCamera.transform.position.z)
-            ));
+            Vector3 worldPosition;
+            if (mainCamera.orthographic)
+            {
+                worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                    mousePosition.x,
+                    mousePosition.y,
+                    Mathf.Abs(mainCamera.transform.position.z)
+                ));
+            }
+            else
+            {
+                // En Perspective : utiliser la distance jusqu'à la carte
+                float distanceToCard = mainCamera.transform.position.z - stateMachine.Transform.position.z;
+                worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(
+                    mousePosition.x,
+                    mousePosition.y,
+                    Mathf.Abs(distanceToCard)
+                ));
+            }
             
             Vector3 targetPosition = worldPosition + dragOffset;
             
-            // Calculer la vélocité pour l'effet de tilt
-            velocity = (targetPosition - lastPosition) / Time.deltaTime;
+            // Calculer la vélocité
+            float deltaTime = Time.deltaTime;
+            if (deltaTime > 0)
+            {
+                velocity = (targetPosition - lastPosition) / deltaTime;
+            }
             lastPosition = targetPosition;
             
             // Appliquer la position
             stateMachine.Transform.position = targetPosition;
             
-            // Appliquer l'effet de rotation flottante
+            // Appliquer l'effet de rotation
             ApplyTiltRotation();
 
-            // Notifier le changement de position pour réorganiser la main
-            if (CardEventBus.Instance != null)
+            // Throttle les mises à jour d'index pour éviter de recalculer trop souvent
+            if (Time.time - lastIndexUpdateTime >= INDEX_UPDATE_INTERVAL)
             {
-                CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, targetPosition);
+                lastIndexUpdateTime = Time.time;
+                
+                if (CardEventBus.Instance != null)
+                {
+                    CardEventBus.Instance.RaiseUpdateCardIndex(stateMachine.gameObject, targetPosition);
+                }
             }
         }
     }
 
-    /// <summary>
-    /// Applique une rotation dynamique basée sur la vélocité du mouvement
-    /// </summary>
     private void ApplyTiltRotation()
     {
-        // Récupérer les settings (ou utiliser valeurs par défaut si null)
         CardTiltSettings settings = stateMachine.TiltSettings;
         
         float tiltIntensityX = settings != null ? settings.tiltIntensityX : 15f;
@@ -94,15 +126,12 @@ public class CardDraggingState : ICardState
         float maxTiltAngleXY = settings != null ? settings.maxTiltAngleXY : 30f;
         float maxTiltAngleZ = settings != null ? settings.maxTiltAngleZ : 45f;
         
-        // Calculer les angles de rotation basés sur la vélocité
         float tiltX = Mathf.Clamp(-velocity.y * tiltIntensityX, -maxTiltAngleXY, maxTiltAngleXY);
         float tiltY = Mathf.Clamp(velocity.x * tiltIntensityY, -maxTiltAngleXY, maxTiltAngleXY);
         float tiltZ = Mathf.Clamp(-velocity.x * tiltIntensityZ, -maxTiltAngleZ, maxTiltAngleZ);
         
-        // Créer la rotation cible
         Quaternion targetRotation = Quaternion.Euler(tiltX, tiltY, tiltZ);
         
-        // Lisser la rotation pour un effet plus naturel
         stateMachine.Transform.rotation = Quaternion.Lerp(
             stateMachine.Transform.rotation,
             targetRotation,
@@ -112,7 +141,6 @@ public class CardDraggingState : ICardState
 
     public void OnExit()
     {
-        // Restaurer le sorting order
         if (stateMachine.CardData != null)
         {
             stateMachine.CardData.frontSpriteRenderer.sortingOrder = stateMachine.CardData.sortingOrderInitiale;

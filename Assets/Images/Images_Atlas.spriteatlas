@@ -20,7 +20,20 @@ SpriteAtlas:
       readable: 0
       crunchedCompression: 0
       sRGB: 1
-    platformSettings: []
+    platformSettings:
+    - serializedVersion: 4
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 80
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_IgnorePlatformSupport: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
     packingSettings:
       serializedVersion: 2
       padding: 4
@@ -38,7 +51,6 @@ SpriteAtlas:
     cachedData: {fileID: 0}
     packedSpriteRenderDataKeys:
     - d6cc8ee2cc0d4c445b35032740d60c6b: 21300000
-    - 8addd4940b10efd4d853569dd6ad9b1b: 21300000
     - 0ca968154a0cff64b94586adaa71bda9: 21300000
     - bdaa7c86b2a76814e9ae5f3a6daa8e6d: 21300000
     - 8cb5ede81b8c19b498da7ed3b020c0c1: 21300000
@@ -47,7 +59,6 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: d6cc8ee2cc0d4c445b35032740d60c6b, type: 3}
-  - {fileID: 21300000, guid: 8addd4940b10efd4d853569dd6ad9b1b, type: 3}
   - {fileID: 21300000, guid: 0ca968154a0cff64b94586adaa71bda9, type: 3}
   - {fileID: 21300000, guid: bdaa7c86b2a76814e9ae5f3a6daa8e6d, type: 3}
   - {fileID: 21300000, guid: 8cb5ede81b8c19b498da7ed3b020c0c1, type: 3}
@@ -55,7 +66,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dc484a4e873ee324184188aee50e1326, type: 3}
   m_PackedSpriteNamesToIndex:
   - card_terrain_swamp
-  - card_front
   - card_terrain_mountain
   - card_terrain_forest
   - card_back
