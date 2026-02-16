@@ -168,7 +168,7 @@ public class CardDraggingState : ICardState
 
     private void ApplyTiltRotation()
     {
-        CardTiltSettings settings = stateMachine.TiltSettings;
+        CardTiltConfiguration settings = stateMachine.TiltSettings;
         
         float tiltIntensityX = settings != null ? settings.tiltIntensityX : 15f;
         float tiltIntensityY = settings != null ? settings.tiltIntensityY : 15f;

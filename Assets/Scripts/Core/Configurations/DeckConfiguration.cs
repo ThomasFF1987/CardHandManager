@@ -31,7 +31,7 @@ using UnityEngine;
 /// 
 /// ═══════════════════════════════════════════════════════════════════════════
 /// </summary>
-[CreateAssetMenu(fileName = "New Deck", menuName = "Card Game/Deck Configuration", order = 1)]
+[CreateAssetMenu(fileName = "New Deck", menuName = "CardHandManager ScriptableObjects/Deck Configuration", order = 1)]
 public class DeckConfiguration : ScriptableObject
 {
     [Header("Deck Info")]

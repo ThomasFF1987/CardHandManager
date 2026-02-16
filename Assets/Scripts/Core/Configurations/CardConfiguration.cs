@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardConfig", menuName = "TCG/Card Configuration")]
+[CreateAssetMenu(fileName = "CardConfig", menuName = "CardHandManager ScriptableObjects/Card Configuration")]
 public class CardConfiguration : ScriptableObject
 {
     public string cardName;

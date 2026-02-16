@@ -50,7 +50,7 @@ using UnityEngine;
 public class CardStateMachine : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private CardTiltSettings tiltSettings;
+    [SerializeField] private CardTiltConfiguration tiltSettings;
     
     // États
     private CardIdleState idleState;
@@ -64,7 +64,7 @@ public class CardStateMachine : MonoBehaviour
     public Transform Transform { get; private set; }
     public CardData CardData { get; private set; }
     public CardAnimator CardAnimator { get; private set; }
-    public CardTiltSettings TiltSettings => tiltSettings;
+    public CardTiltConfiguration TiltSettings => tiltSettings;
     
     // Propriétés pour accéder aux états
     public CardIdleState IdleState => idleState;

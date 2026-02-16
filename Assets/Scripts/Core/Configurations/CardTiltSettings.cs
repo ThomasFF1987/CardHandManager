@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardTiltSettings", menuName = "Card/Tilt Settings")]
-public class CardTiltSettings : ScriptableObject
+[CreateAssetMenu(fileName = "CardTiltConfiguration", menuName = "CardHandManager ScriptableObjects/Card Tilt Configuration\"")]
+public class CardTiltConfiguration : ScriptableObject
 {
     [Header("Tilt Intensity")]
     [Range(0f, 50f)]
