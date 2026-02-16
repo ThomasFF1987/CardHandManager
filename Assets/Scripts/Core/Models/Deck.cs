@@ -9,6 +9,14 @@ public class Deck : IDeck
     public int Count => cards.Count;
 
     public void AddCard(Card card) => cards.Add(card);
+    
+    /// <summary>
+    /// Ajoute une carte en haut du deck (pour Undo)
+    /// </summary>
+    public void AddCardToTop(Card card)
+    {
+        cards.Insert(0, card);
+    }
 
     public Card DrawCard()
     {

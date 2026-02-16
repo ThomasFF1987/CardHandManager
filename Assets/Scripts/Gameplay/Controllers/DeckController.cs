@@ -33,7 +33,7 @@ public class DeckController : MonoBehaviour
     {
         deck = new Deck();
 
-        foreach (var cardConfig in deckConfiguration.startingCards)
+        foreach (var cardConfig in deckConfiguration.cards)
         {
             Card card = new Card
             {

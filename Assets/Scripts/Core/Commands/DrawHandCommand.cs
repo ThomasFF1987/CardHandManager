@@ -2,65 +2,92 @@ using System.Collections.Generic;
 
 /// <summary>
 /// ═══════════════════════════════════════════════════════════════════════════
-/// DRAWHANDCOMMAND - Commande pour piocher des cartes dans la main
+/// DRAWHANDCOMMAND - Commande pour piocher des cartes du deck vers la main
 /// ═══════════════════════════════════════════════════════════════════════════
 /// 
 /// 🎯 RÔLE :
-/// - Encapsule l'action de piocher plusieurs cartes
+/// - Encapsule l'action de piocher plusieurs cartes depuis le DeckManager
 /// - Implémente le pattern Command pour permettre Undo/Redo
 /// - Synchronise le modèle (Hand) avec la vue (HandView)
 /// 
 /// 📦 RESPONSABILITÉS :
-/// - Execute() : Ajoute les cartes à la main et met à jour l'affichage
-/// - Undo() : Retire les cartes ajoutées et restaure l'état précédent
-/// - Garde la trace des cartes ajoutées pour l'annulation
+/// - Execute() : Pioche cartes du deck, ajoute à la main, met à jour l'affichage
+/// - Undo() : Retire les cartes de la main et les remet dans le deck
+/// - Garde la trace des cartes piochées pour l'annulation
 /// 
 /// 🔗 UTILISÉ PAR :
 /// - HandController.DrawInitialHand() : Pioche la main de départ avec G
 /// 
 /// 📊 FLUX D'EXÉCUTION :
 /// 1. Execute() appelé par le HandController
-/// 2. Pour chaque carte → hand.AddCard()
-/// 3. Mise à jour de l'affichage → view.UpdateDisplay()
-/// 4. Stockage des cartes ajoutées dans addedCards (pour Undo)
+/// 2. DeckManager.DrawCards(count) → Obtient les cartes
+/// 3. Pour chaque carte → hand.AddCard()
+/// 4. Mise à jour de l'affichage → view.UpdateDisplay()
+/// 5. Stockage des cartes piochées dans drawnCards (pour Undo)
 /// 
-/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// 💡 AMÉLIORATIONS POSSIBLES :
 /// - Ajouter une animation de pioche progressive
-/// - Piocher depuis un Deck au lieu d'une liste
-/// - Ajouter des effets sonores/visuels
 /// - Vérifier si la main n'est pas pleine avant d'ajouter
 /// - Logger les commandes pour débug/analytics
+/// - Gérer le cas où le deck est vide (piocher depuis la défausse)
 /// 
 /// ⚙️ PARAMÈTRES :
+/// - deckManager : Gère le deck de cartes
 /// - hand : Le modèle de la main (données)
 /// - view : La vue de la main (affichage)
-/// - cardsToAdd : Les cartes à piocher
+/// - cardsToDraw : Nombre de cartes à piocher
 /// 
 /// ═══════════════════════════════════════════════════════════════════════════
 /// </summary>
 public class DrawHandCommand : ICommand
 {
+    private readonly DeckManager deckManager;
     private readonly Hand hand;
     private readonly HandView view;
-    private readonly List<Card> cardsToAdd;
-    private readonly List<Card> addedCards;
+    private readonly int cardsToDraw;
+    private readonly List<Card> drawnCards;
+    private readonly bool useRandomDraw;
 
-    public DrawHandCommand(Hand hand, HandView view, List<Card> cards)
+    /// <summary>
+    /// Constructeur pour piocher depuis le deck
+    /// </summary>
+    public DrawHandCommand(DeckManager deckManager, Hand hand, HandView view, int cardsToDraw)
     {
+        this.deckManager = deckManager;
         this.hand = hand;
         this.view = view;
-        this.cardsToAdd = cards;
-        this.addedCards = new List<Card>();
+        this.cardsToDraw = cardsToDraw;
+        this.drawnCards = new List<Card>();
+        this.useRandomDraw = false;
+    }
+
+    /// <summary>
+    /// Constructeur pour piocher des cartes aléatoires (pour debug/testing)
+    /// </summary>
+    public DrawHandCommand(DeckManager deckManager, Hand hand, HandView view, int cardsToDraw, bool randomDraw)
+    {
+        this.deckManager = deckManager;
+        this.hand = hand;
+        this.view = view;
+        this.cardsToDraw = cardsToDraw;
+        this.drawnCards = new List<Card>();
+        this.useRandomDraw = randomDraw;
     }
 
     public void Execute()
     {
-        addedCards.Clear();
+        drawnCards.Clear();
         
-        foreach (Card card in cardsToAdd)
+        // Piocher les cartes depuis le DeckManager
+        List<Card> cards = useRandomDraw 
+            ? deckManager.DrawRandomCards(cardsToDraw)
+            : deckManager.DrawCards(cardsToDraw);
+        
+        // Ajouter les cartes piochées à la main
+        foreach (Card card in cards)
         {
             hand.AddCard(card);
-            addedCards.Add(card);
+            drawnCards.Add(card);
         }
         
         view.UpdateDisplay(hand.Cards);
@@ -68,12 +95,19 @@ public class DrawHandCommand : ICommand
 
     public void Undo()
     {
-        foreach (Card card in addedCards)
+        // Retirer les cartes de la main
+        foreach (Card card in drawnCards)
         {
             hand.RemoveCard(card);
+            
+            // Remettre la carte dans le deck (optionnel)
+            if (!useRandomDraw)
+            {
+                deckManager.AddCardToDeck(card);
+            }
         }
         
-        addedCards.Clear();
+        drawnCards.Clear();
         view.UpdateDisplay(hand.Cards);
     }
 }
