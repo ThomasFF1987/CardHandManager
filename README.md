@@ -4,6 +4,7 @@ Developed by Thomas Baggi-Sani, in Unity 6.3 LTS (6000.3.5f2)
 
 ![](https://github.com/ThomasFF1987/CardHandManager/blob/main/CardHandManagerDemo.gif)
 
+
 [Description]
 
 This project is based on the desire to reproduce trading card game features like having a hand of cards to play in your game.
@@ -14,15 +15,23 @@ I hope, you will enjoyed it and feel free to ask for features or modifications.
 
 It's currently a WIP project.
 
+
 [How it works]
 
 1-Download the .unitypackage file in this repo.
+
 2-Import this package in a new unity project or your game project.
+
 3-Open the MainScene.scene in Unity.
+
 4-Press Play to run the application.
+
 5-Press G on your keyboard to generate a hand of cards.
+
 6-You can drag and drop cards and see what CardHandManager can do in realtime.
+
 7-You can create Cards and Decks configuration using Scriptable Objects.
+
 
 [Disclaimer]
 
