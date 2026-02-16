@@ -25,5 +25,6 @@ It's currently a WIP project.
 7-You can create Cards and Decks configuration using Scriptable Objects.
 
 [Disclaimer]
+
 I have no rights on images included in the package. It's from Magic the Gathering and not available to be use with rights, please keep this only for development.
 I've used Github Copilot with Claude Sonnet 4.5 to code this project.
