@@ -1,7 +1,11 @@
+using System.Collections.Generic;
+
 public interface IDeck
 {
-    void AddCard(ICard card);
-    ICard DrawCard();
+    IReadOnlyList<Card> Cards { get; }
+    int Count { get; }
+    
+    void AddCard(Card card);
+    Card DrawCard();
     void Shuffle();
-    int CardCount { get; }
 }

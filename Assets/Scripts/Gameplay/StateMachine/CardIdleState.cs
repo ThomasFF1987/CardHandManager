@@ -1,7 +1,26 @@
 using UnityEngine;
 
 /// <summary>
-/// État lorsque la carte est au repos dans la main
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDIDLESTATE - État de repos de la carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - État par défaut quand la carte est dans la main
+/// - Position/rotation définies par le HandView layout
+/// - Aucune interaction en cours
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - OnEnter() : Anime vers la position cible
+/// - OnUpdate() : État passif
+/// - OnExit() : Rien (transition vers Hover/Dragging)
+/// 
+/// 📊 TRANSITIONS :
+/// Start → Idle (état initial)
+/// Hover → Idle (souris sort)
+/// Dragging → Idle (relâche souris sans jouer)
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
 /// </summary>
 public class CardIdleState : ICardState
 {
@@ -16,20 +35,20 @@ public class CardIdleState : ICardState
 
     public void OnEnter()
     {
-        // Réinitialiser l'échelle
+        // Animer vers la position de repos
         if (stateMachine.CardAnimator != null)
         {
-            stateMachine.CardAnimator.ResetScale();
+            stateMachine.CardAnimator.AnimateToTargetPosition();
         }
     }
 
     public void OnUpdate()
     {
-        // Rien de spécial en idle
+        // Attendre interaction
     }
 
     public void OnExit()
     {
-        // Nettoyage si nécessaire
+        // Transition vers autre état
     }
 }

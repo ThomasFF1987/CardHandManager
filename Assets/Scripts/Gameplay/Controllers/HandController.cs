@@ -1,11 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.InputSystem;
 
+/// <summary>
+/// ═══════════════════════════════════════════════════════════════════════════
+/// HANDCONTROLLER - Contrôleur simplifié (respecte SRP)
+/// ═══════════════════════════════════════════════════════════════════════════
+/// </summary>
 public class HandController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private HandView view;
+    [SerializeField] private InputHandler inputHandler;
 
     [Header("Starting Hand")]
     [SerializeField] private int startingHandSize = 5;
@@ -13,53 +18,55 @@ public class HandController : MonoBehaviour
     [SerializeField] private List<CardConfiguration> deck;
 
     [Header("Reorder Settings")]
-    [SerializeField] private float maxHeightOffset = 3.5f; // Hauteur d'une carte
+    [SerializeField] private float maxHeightOffset = 3.5f;
 
     private Hand hand = new Hand();
     private bool isSubscribed = false;
-    private DrawHandCommand drawHandCommand;
+    private CommandManager commandManager = new CommandManager(); // ✨ Nouveau
 
     private void Start()
     {
-        // S'abonner aux événements
         SubscribeToEvents();
-    }
-
-    private void Update()
-    {
-        // Écouter la touche G pour piocher/redessiner les cartes
-        if (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame)
-        {
-            DrawInitialHand();
-        }
+        SubscribeToInputs();
     }
 
     private void OnDestroy()
     {
         UnsubscribeFromEvents();
+        UnsubscribeFromInputs();
     }
 
-    /// <summary>
-    /// Pioche/Repioche la main initiale en utilisant le pattern Command
-    /// </summary>
+    private void SubscribeToInputs()
+    {
+        if (inputHandler != null)
+        {
+            inputHandler.OnDrawHandRequested += DrawInitialHand;
+        }
+    }
+
+    private void UnsubscribeFromInputs()
+    {
+        if (inputHandler != null)
+        {
+            inputHandler.OnDrawHandRequested -= DrawInitialHand;
+        }
+    }
+
     private void DrawInitialHand()
     {
         if (startingHandSize > 0)
         {
-            // Vider la main existante
             hand.Clear();
             view.UpdateDisplay(hand.Cards);
             
-            // Générer de nouvelles cartes
             List<Card> tempCards = CreateCardFromDeck(deck, startingHandSize);
-            drawHandCommand = new DrawHandCommand(hand, view, tempCards);
-            drawHandCommand.Execute();
+            DrawHandCommand drawHandCommand = new DrawHandCommand(hand, view, tempCards);
+            commandManager.ExecuteCommand(drawHandCommand); // ✨ Utilise le CommandManager
         }
     }
 
     private void SubscribeToEvents()
     {
-        // Vérifier que l'instance existe ET que l'application ne se ferme pas
         if (CardEventBus.Instance != null && !CardEventBus.Instance.Equals(null))
         {
             CardEventBus.Instance.RemoveCard += OnRemoveCardRequested;
@@ -71,7 +78,6 @@ public class HandController : MonoBehaviour
 
     private void UnsubscribeFromEvents()
     {
-        // Ne tenter de se désabonner que si on était abonné et que l'instance existe encore
         if (isSubscribed && CardEventBus.Instance != null && !CardEventBus.Instance.Equals(null))
         {
             CardEventBus.Instance.RemoveCard -= OnRemoveCardRequested;
@@ -107,67 +113,20 @@ public class HandController : MonoBehaviour
         view.UpdateDisplay(hand.Cards);
     }
 
-    /// <summary>
-    /// Réorganise les cartes en fonction de la position de drag
-    /// </summary>
     private void OnUpdateCardIndexRequested(GameObject cardGO, Vector3 worldPosition)
     {
         CardData cardData = cardGO.GetComponent<CardData>();
         if (cardData == null || cardData.CardInfo == null) return;
 
-        // Vérifier si la carte est trop haute par rapport à sa position initiale
-        float heightDifference = worldPosition.y - cardData.positionInitiale.y;
-        
-        // Si la carte est trop haute (au-delà de la hauteur d'une carte), on ne réorganise pas
-        if (heightDifference > maxHeightOffset)
+        // Utiliser le calculator statique
+        if (CardLayoutCalculator.IsPositionTooHigh(worldPosition, cardData.positionInitiale, maxHeightOffset))
         {
             return;
         }
 
-        // Calculer le nouvel index basé sur la position mondiale
-        int newIndex = CalculateCardIndexFromPosition(worldPosition);
-        
-        // Réorganiser la carte dans le modèle
+        int newIndex = CardLayoutCalculator.CalculateCardIndex(worldPosition, hand, view);
         hand.ReorderCard(cardData.CardInfo, newIndex);
-        
-        // Mettre à jour l'affichage
         view.UpdateDisplay(hand.Cards);
-    }
-
-    /// <summary>
-    /// Calcule l'index de la carte en fonction de sa position X
-    /// </summary>
-    private int CalculateCardIndexFromPosition(Vector3 worldPosition)
-    {
-        // Si la main est vide, retourner 0
-        if (hand.Count == 0) return 0;
-
-        // Trouver l'index le plus proche basé sur la position X
-        float minDistance = float.MaxValue;
-        int closestIndex = 0;
-
-        for (int i = 0; i < hand.Count; i++)
-        {
-            Card card = hand.Cards[i];
-            GameObject cardGO = view.GetCardGameObject(card);
-            
-            if (cardGO != null)
-            {
-                CardData cardData = cardGO.GetComponent<CardData>();
-                if (cardData != null)
-                {
-                    float distance = Mathf.Abs(cardData.positionInitiale.x - worldPosition.x);
-                    
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        closestIndex = i;
-                    }
-                }
-            }
-        }
-
-        return closestIndex;
     }
 
     private List<Card> CreateCardFromDeck(List<CardConfiguration> cardDeck, int numberOfCard)
@@ -176,30 +135,35 @@ public class HandController : MonoBehaviour
         
         for (int i = 0; i < numberOfCard; i++)
         {
-            if (cardDeck != null && cardDeck.Count > 0)
+            CardConfiguration config = GetRandomCardConfig(cardDeck);
+            if (config != null)
             {
-                int randomIndex = Random.Range(0, cardDeck.Count);
-                CardConfiguration config = cardDeck[randomIndex];
-                cardsGenerated.Add(new Card
-                {
-                    Id = System.Guid.NewGuid().ToString(),
-                    Name = config.cardName,
-                    CardFrontImage = config.frontSprite,
-                    CardBackImage = config.backSprite
-                });
-            }
-            else if (defaultCardConfig != null)
-            {
-                cardsGenerated.Add(new Card
-                {
-                    Id = System.Guid.NewGuid().ToString(),
-                    Name = defaultCardConfig.cardName,
-                    CardFrontImage = defaultCardConfig.frontSprite,
-                    CardBackImage = defaultCardConfig.backSprite
-                });
+                cardsGenerated.Add(CreateCardFromConfig(config));
             }
         }
         
         return cardsGenerated;
+    }
+    
+    // ✨ Extrait la logique de sélection
+    private CardConfiguration GetRandomCardConfig(List<CardConfiguration> cardDeck)
+    {
+        if (cardDeck != null && cardDeck.Count > 0)
+        {
+            return cardDeck[Random.Range(0, cardDeck.Count)];
+        }
+        return defaultCardConfig;
+    }
+    
+    // ✨ Extrait la création de Card
+    private Card CreateCardFromConfig(CardConfiguration config)
+    {
+        return new Card
+        {
+            Id = System.Guid.NewGuid().ToString(),
+            Name = config.cardName,
+            CardFrontImage = config.frontSprite,
+            CardBackImage = config.backSprite
+        };
     }
 }

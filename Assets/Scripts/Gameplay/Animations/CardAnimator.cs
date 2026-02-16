@@ -1,6 +1,56 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDANIMATOR - Gestionnaire des animations de carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - Anime les transitions de position, rotation et scale
+/// - Centralisé pour toutes les animations de carte
+/// - Utilise des Coroutines avec Lerp smooth
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - SetTargetTransform() : Définit la position/rotation cible (layout)
+/// - AnimateToTargetPosition() : Anime vers la position cible
+/// - AnimateHover() : Monte la carte selon son axe Y local + scale
+/// - AnimateUnhover() : Retour à la position normale
+/// - AnimateSelected() : Scale up + rotation à 0
+/// - AnimateDeselected() : Retour à l'état normal
+/// 
+/// 🎨 PARAMÈTRES ANIMABLES :
+/// - hoverHeight : Hauteur de montée au survol (1f par défaut)
+/// - hoverScale : Facteur de scale au survol (1.1x)
+/// - selectedScale : Facteur de scale en sélection (1.2x)
+/// - transitionSpeed : Vitesse du Lerp (2f par défaut)
+/// 
+/// 📊 GESTION COROUTINES :
+/// - currentAnimation : Référence à la coroutine active
+/// - StopCurrentAnimation() : Arrête la coroutine précédente
+/// - MoveToPosition() : Coroutine générique position + rotation
+/// 
+/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// - Ajouter des easing curves (EaseInOut, Bounce)
+/// - Créer des animations de flip (retournement)
+/// - Ajouter des shake effects
+/// - Implémenter des animations de spawn (apparition)
+/// - Créer des animations de destruction (disparition)
+/// - Ajouter des trails/motion blur
+/// - Synchroniser avec des effets sonores
+/// 
+/// ⚙️ ASTUCE AXE LOCAL :
+/// AnimateHover() utilise transform.up (axe Y local) pour que
+/// les cartes inclinées montent selon leur orientation
+/// 
+/// 🔄 CYCLE DE VIE ANIMATION :
+/// 1. State change → AnimateXXX()
+/// 2. StopCurrentAnimation() → Arrête l'ancienne
+/// 3. StartCoroutine(MoveToPosition()) → Démarre la nouvelle
+/// 4. Lerp jusqu'à atteindre la cible
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
+/// </summary>
 public class CardAnimator : MonoBehaviour
 {
     [SerializeField] private float hoverHeight = 1f;

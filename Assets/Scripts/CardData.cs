@@ -1,7 +1,48 @@
 using UnityEngine;
 
 /// <summary>
-/// Composant contenant les données et références visuelles d'une carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDDATA - Composant GameObject contenant les données runtime d'une carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - Pont entre le modèle Card (données) et le GameObject Unity
+/// - Gère les références visuelles (SpriteRenderer, Collider)
+/// - Stocke l'état runtime (position initiale, sorting order)
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - CardInfo : Référence vers le modèle Card
+/// - SetFrontSprite() / SetBackSprite() : Applique les sprites
+/// - NormalizeSpriteSize() : Redimensionne pour garder proportions constantes
+/// - UpdateColliderSize() : Ajuste le BoxCollider2D à la taille de la carte
+/// - ShowFront() / ShowBack() : Affiche face/dos de la carte
+/// 
+/// 🔗 COMPOSANTS LIÉS :
+/// - CardInteraction : Lit CardInfo pour les événements
+/// - CardStateMachine : Accède aux SpriteRenderers pour le sorting order
+/// - HandView : Initialise CardInfo et les sprites
+/// 
+/// 📊 DONNÉES STOCKÉES :
+/// - frontSpriteRenderer / backSpriteRenderer : Affichage visuel
+/// - boxCollider2D : Zone de détection souris
+/// - positionInitiale / rotationInitiale : État de repos
+/// - sortingOrderInitiale : Ordre d'affichage de base
+/// 
+/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// - Ajouter des effets visuels (glow, outline, particles)
+/// - Implémenter un système de rareté (couleur de bordure)
+/// - Ajouter des animations de flip (retourner la carte)
+/// - Afficher des statistiques sur la carte (mana, attack, defense)
+/// - Créer des skins/thèmes de cartes
+/// - Ajouter un système de wear & tear (usure visuelle)
+/// 
+/// ⚙️ CONFIGURATION INSPECTOR :
+/// - frontSpriteRenderer : Sprite de la face avant
+/// - backSpriteRenderer : Sprite du dos
+/// - boxCollider2D : Collider pour l'interaction souris
+/// - cardWidth / cardHeight : Taille normalisée des cartes
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
 /// </summary>
 public class CardData : MonoBehaviour
 {

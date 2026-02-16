@@ -3,6 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDINTERACTION - Gestion des interactions souris avec une carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - Détecte les interactions souris (hover, click, drag)
+/// - Communique avec la State Machine pour changer d'état
+/// - Émet des événements vers le CardEventBus
+/// - Input Layer entre l'utilisateur et la carte
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - IsMouseOverCard() : Raycast optimisé pour détecter le survol
+/// - HandleHover() : Gère les transitions Idle ↔ Hover (avec détection mouvement souris)
+/// - HandleMouseDown() : Passe en état Dragging
+/// - HandleMouseUp() : Relâche la carte (retour main ou zone de jeu)
+/// - Throttling des raycasts pour optimiser les performances
+/// 
+/// 🔗 ÉVÉNEMENTS ÉMIS :
+/// - OnCardHovered / OnCardUnhovered : Événements locaux
+/// - CardEventBus.RaiseRemoveCard() : Carte jouée sur la zone
+/// - CardEventBus.RaiseHandLayoutUpdate() : Demande refresh layout
+/// 
+/// 📊 OPTIMISATIONS :
+/// - RAYCAST_INTERVAL : 33ms entre raycasts (30 FPS)
+/// - MOUSE_MOVEMENT_THRESHOLD : 0.1px pour détecter mouvement réel
+/// - Cache des CardData pour éviter GetComponent()
+/// - Utilise OverlapPoint au lieu de Raycast pour les colliders 2D
+/// 
+/// 🎮 FLUX D'INTERACTION :
+/// Hover → IsMouseOverCard() → HandleHover() → StateMachine.ChangeState(HoverState)
+/// Click → HandleMouseDown() → StateMachine.ChangeState(DraggingState)
+/// Release → HandleMouseUp() → Check zone → RaiseRemoveCard() ou ReturnToHand()
+/// 
+/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// - Ajouter un clic droit pour des actions spéciales
+/// - Implémenter un double-clic pour jouer rapidement
+/// - Ajouter un feedback visuel sur le collider (debug)
+/// - Créer des zones de drop différentes (défausse, exile, etc.)
+/// - Ajouter des touches modifiers (Shift, Ctrl)
+/// - Implémenter un système de drag anticipation (prédiction)
+/// 
+/// ⚠️ ASTUCE ANTI-FLICKERING :
+/// HandleHover() vérifie le mouvement de la souris avant de unhover,
+/// évitant la boucle : carte monte → curseur sort → carte descend → boucle
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
+/// </summary>
 public class CardInteraction : MonoBehaviour
 {
     public event Action<CardData> OnCardClicked;

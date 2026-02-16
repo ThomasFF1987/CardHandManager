@@ -2,8 +2,52 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Système centralisé de gestion des événements liés aux cartes.
-/// Remplace les events statiques pour éviter les fuites mémoire.
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDEVENTBUS - Médiateur centralisé pour les événements de cartes
+/// ═══════════════════════════════════════════════════════════════════════════
+//
+// 🎯 RÔLE :
+// - Bus d'événements global (Singleton) pour la communication découplée
+// - Permet aux composants de communiquer sans références directes
+// - Pattern Observer/Mediator pour réduire le couplage
+//
+// 📦 RESPONSABILITÉS :
+// - RaiseRemoveCard() : Notifie la suppression d'une carte
+// - RaiseHandLayoutUpdate() : Demande un refresh du layout
+// - RaiseUpdateCardIndex() : Notifie le changement de position (drag)
+// - RaiseCardHovered/Unhovered() : Événements de survol (futurs)
+// - RaiseCardSelected/Deselected() : Événements de sélection (futurs)
+//
+// 🔗 ÉMETTEURS (Publishers) :
+// - CardInteraction : Envoie RemoveCard, HandLayoutUpdate
+// - CardDraggingState : Envoie UpdateCardIndex pendant le drag
+//
+// 🔗 RÉCEPTEURS (Subscribers) :
+// - HandController : S'abonne à tous les événements pour gérer la main
+//
+// 📊 FLUX D'ÉVÉNEMENT :
+// CardInteraction.HandleMouseUp() → RaiseRemoveCard() → HandController.OnRemoveCardRequested()
+// CardDraggingState.OnUpdate() → RaiseUpdateCardIndex() → HandController.OnUpdateCardIndexRequested()
+//
+// 💡 CE QUE VOUS POUVEZ FAIRE :
+// - Ajouter des événements : CardPlayed, CardDiscarded, CardDrawn
+// - Implémenter un système de log/replay des événements
+// - Créer des listeners pour l'UI (score, mana, etc.)
+// - Ajouter des événements pour le son/musique
+// - Implémenter un système de networking (multiplayer)
+// - Logger les événements pour analytics/debug
+//
+// ⚠️ AVANTAGES :
+// - ✅ Découplage fort : Les composants ne se connaissent pas
+// - ✅ Extensibilité : Facile d'ajouter de nouveaux listeners
+// - ✅ Testabilité : Mock le bus pour les tests unitaires
+// - ✅ Protection mémoire : Gestion du isQuitting pour éviter les leaks
+//
+// 🏗️ PATTERN :
+// Event Bus / Mediator Pattern - Centralise la communication entre
+// composants indépendants via un bus d'événements global.
+// 
+/// ═══════════════════════════════════════════════════════════════════════════
 /// </summary>
 public class CardEventBus : Singleton<CardEventBus>
 {

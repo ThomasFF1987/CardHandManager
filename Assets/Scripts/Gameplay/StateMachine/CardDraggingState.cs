@@ -1,6 +1,57 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// ═══════════════════════════════════════════════════════════════════════════
+/// CARDDRAGGINGSTATE - État "Déplacement" de la carte
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - État actif pendant le drag & drop de la carte
+/// - Suit la position de la souris en temps réel
+/// - Applique une rotation "tilt" basée sur la vélocité
+/// - Notifie le HandController pour réorganiser les cartes
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - OnEnter() : Calcule l'offset entre souris et carte
+/// - OnUpdate() : 
+///     1. Calcule position monde de la souris
+///     2. Applique la position + offset
+///     3. Calcule la vélocité
+///     4. Applique le tilt rotation (effet inertie)
+///     5. Notifie CardEventBus.RaiseUpdateCardIndex() (throttlé 50ms)
+/// - OnExit() : Restaure le sorting order
+/// 
+/// 🎮 TILT ROTATION :
+/// - Rotation X : Basée sur vélocité Y (carte penche en avant/arrière)
+/// - Rotation Y : Basée sur vélocité X (carte penche gauche/droite)
+/// - Rotation Z : Basée sur vélocité X (carte s'incline comme une ailette)
+/// - Lerp smooth pour un effet fluide
+/// 
+/// 📊 OPTIMISATIONS :
+/// - INDEX_UPDATE_INTERVAL : 50ms entre notifications (20 Hz)
+/// - Throttling pour éviter de spammer le HandController
+/// 
+/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// - Ajouter une traînée de particules pendant le drag
+/// - Créer des zones de drop avec highlight
+/// - Afficher un fantôme de la carte à sa future position
+/// - Ajouter un système de snap-to-grid
+/// - Implémenter un shake effect si drop invalide
+/// - Créer des restrictions de drag (zones interdites)
+/// - Ajouter un feedback sonore pendant le mouvement
+/// 
+/// ⚙️ CONFIGURATION :
+/// Utilise CardTiltSettings pour :
+/// - tiltIntensityX/Y/Z : Force de l'inclinaison
+/// - maxTiltAngleXY/Z : Limite des rotations
+/// - tiltSmoothSpeed : Vitesse du lerp
+/// 
+/// 📐 GESTION CAMÉRA :
+/// Supporte Orthographic et Perspective avec calculs adaptés
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
+/// </summary>
 public class CardDraggingState : ICardState
 {
     private readonly CardStateMachine stateMachine;

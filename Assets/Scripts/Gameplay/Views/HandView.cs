@@ -2,6 +2,56 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// ═══════════════════════════════════════════════════════════════════════════
+/// HANDVIEW - Vue de la main en éventail (Fan Layout)
+/// ═══════════════════════════════════════════════════════════════════════════
+/// 
+/// 🎯 RÔLE :
+/// - Affichage visuel de la main du joueur
+/// - Calcule et applique le layout en arc de cercle
+/// - Instancie/détruit les GameObjects des cartes
+/// - Couche "View" dans le pattern MVC
+/// 
+/// 📦 RESPONSABILITÉS :
+/// - UpdateDisplay() : Point d'entrée pour rafraîchir l'affichage
+/// - UpdateLayout() : Calcule positions/rotations en éventail
+/// - AddNewCards() : Instancie les nouveaux GameObjects de cartes
+/// - RemoveObsoleteCards() : Détruit les cartes supprimées
+/// - GetCardGameObject() : Récupère le GameObject d'une carte
+/// 
+/// 🔗 UTILISÉ PAR :
+/// - HandController : Appelle UpdateDisplay() après chaque modification
+/// - DrawHandCommand : Met à jour l'affichage après pioche
+/// 
+/// 📐 ALGORITHME LAYOUT :
+/// 1. Calcule l'angle total de l'éventail basé sur le nombre de cartes
+/// 2. Pour chaque carte, calcule :
+///    - Position en arc de cercle (sin/cos)
+///    - Rotation pour suivre la courbe
+///    - Sorting order (cartes centrales au-dessus)
+/// 3. Applique via CardAnimator.SetTargetTransform()
+/// 
+/// 💡 CE QUE VOUS POUVEZ FAIRE :
+/// - Ajuster spacing et angleMax en runtime via les propriétés
+/// - Créer d'autres layouts (ligne droite, grille, poker hand)
+/// - Ajouter des animations de transition (cards shuffling)
+/// - Implémenter un zoom sur la carte survolée
+/// - Créer un layout différent pour mobile (vertical)
+/// - Ajouter des effets de particules sur les cartes
+/// 
+/// ⚙️ CONFIGURATION INSPECTOR :
+/// - spacing : Espacement entre les cartes (1-50)
+/// - angleMax : Angle maximum de l'éventail (0-100°)
+/// - cardPrefab : Prefab de carte à instancier
+/// - handTransform : Parent des cartes
+/// 
+/// 📊 DICTIONNAIRES :
+/// - cardGameObjects : Map Card → GameObject
+/// - cardComponents : Map Card → (CardData, CardAnimator, CardStateMachine)
+/// 
+/// ═══════════════════════════════════════════════════════════════════════════
+/// </summary>
 public class HandView : MonoBehaviour
 {
     [Header("Layout Parameters")]
